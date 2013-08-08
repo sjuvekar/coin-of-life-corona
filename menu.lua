@@ -10,6 +10,9 @@ local scene = storyboard.newScene()
 -- include Corona's "widget" library
 local widget = require "widget"
 
+-- include utils for all parameters
+local util = require "util"
+
 --------------------------------------------
 
 -- forward declarations and other locals
@@ -39,7 +42,7 @@ function scene:createScene( event )
 
 	
 	-- create/position logo/title image on upper-half of the screen
-	local titleLogo = display.newImageRect( "logo.png", 384, 384 )
+	local titleLogo = display.newImageRect( util.params.logo_image, 384, 384 )
 	titleLogo:setReferencePoint( display.CenterReferencePoint )
 	titleLogo.x = display.contentWidth * 0.5
 	titleLogo.y = 256
@@ -47,8 +50,8 @@ function scene:createScene( event )
 	-- create a widget button (which will loads level1.lua on release)
 	playBtn = widget.newButton{
 		label="Play",
-		defaultFile="button.png",
-		overFile="active_button.png",
+		defaultFile=util.params.button_image,
+		overFile=util.params.active_button_image,
 		width=192, height=64,
 		onRelease = onPlayBtnRelease	-- event listener function
 	}
@@ -59,8 +62,8 @@ function scene:createScene( event )
 	-- Create a button for tutorial
 	tutBtn = widget.newButton{
 		label="Tutorial",
-		defaultFile="button.png",
-		overFile="active_button.png",
+		defaultFile=util.params.button_image,
+		overFile=util.params.active_button_image,
 		width=192, height=64,
 		onRelease = onPlayBtnRelease	-- event listener function
 	}
@@ -115,6 +118,10 @@ function scene:destroyScene( event )
 	if playBtn then
 		playBtn:removeSelf()	-- widgets must be manually removed
 		playBtn = nil
+	end
+	if tutBtn then
+		tutBtn:removeSelf()
+		tutBtn = nil
 	end
 end
 

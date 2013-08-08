@@ -11,6 +11,9 @@ local scene = storyboard.newScene()
 local physics = require "physics"
 physics.start(); physics.pause()
 
+-- Include util
+local util = require( "util" )
+
 --------------------------------------------
 
 -- forward declarations and other locals
@@ -24,22 +27,27 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
+-- Lines for grid
+local lines_horiz, lines_vert
+
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
 	local group = self.view
 
-	-- create a grey rectangle as the backdrop
-	local background = display.newRect( 0, 0, screenW, screenH )
-	background:setFillColor( 128 )
-	
-	-- make a crate (off-screen), position it, and rotate slightly
-	local crate = display.newImageRect( "crate.png", 90, 90 )
-	crate.x, crate.y = 160, -100
-	crate.rotation = 15
-	
-	-- add physics to the crate
-	physics.addBody( crate, { density=1.0, friction=0.3, bounce=0.3 } )
-	
+	local num_cells = util.params.num_cells
+	local cell_width = util.params.cell_width
+	local cell_height = util.params.cell_height
+
+	lines_horiz = {}
+	lines_vert = {}
+
+	for i = 1:num_cells do
+		lines_horiz[i] = display.newLine(cell_width, i * cell_height,  cell_width * num_cells, i * cell_height)
+		lines_horiz[i]:setColor(255, 255, 255)
+		lines_vert[i] = display.newLine(cell_width * i, cell_height,  cell_width * i, num_cells * cell_height)
+		lines_vert[i]:setColor(255, 255, 255)
+	end
+
 	-- create a grass object and add physics (with custom shape)
 	local grass = display.newImageRect( "grass.png", screenW, 82 )
 	grass:setReferencePoint( display.BottomLeftReferencePoint )
@@ -52,7 +60,6 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( grass)
-	group:insert( crate )
 end
 
 -- Called immediately after scene has moved onscreen:

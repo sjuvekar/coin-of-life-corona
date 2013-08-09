@@ -7,6 +7,9 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 
+-- include Corona's "widget" library
+local widget = require "widget"
+
 -- include Corona's "physics" library
 local physics = require "physics"
 physics.start(); physics.pause()
@@ -26,40 +29,76 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 --		 unless storyboard.removeScene() is called.
 -- 
 -----------------------------------------------------------------------------------------
-
--- Lines for grid
-local lines_horiz, lines_vert
+-- Buttons
+local playBtn, undoBtn, resetBtn
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
 	local group = self.view
 
-	local num_cells = util.params.num_cells
-	local cell_width = util.params.cell_width
-	local cell_height = util.params.cell_height
-
-	lines_horiz = {}
-	lines_vert = {}
-
-	for i = 1:num_cells do
-		lines_horiz[i] = display.newLine(cell_width, i * cell_height,  cell_width * num_cells, i * cell_height)
-		lines_horiz[i]:setColor(255, 255, 255)
-		lines_vert[i] = display.newLine(cell_width * i, cell_height,  cell_width * i, num_cells * cell_height)
-		lines_vert[i]:setColor(255, 255, 255)
+	local num_cells = util.num_cells
+	local cell_width = util.cell_width
+	local cell_height = util.cell_height
+	local arena_width = util.arena_width
+	local arena_height = util.arena_height
+	
+	
+	for i = 1,num_cells do
+		-- Horizontal lines
+		local sh = display.newRect(cell_width, cell_height * i, arena_width, cell_height)
+		sh:setFillColor(0, 0, 0)
+		sh:setStrokeColor(255, 255, 255)
+		sh.strokeWidth = 3
 	end
-
-	-- create a grass object and add physics (with custom shape)
-	local grass = display.newImageRect( "grass.png", screenW, 82 )
-	grass:setReferencePoint( display.BottomLeftReferencePoint )
-	grass.x, grass.y = 0, display.contentHeight
 	
-	-- define a shape that's slightly shorter than image bounds (set draw mode to "hybrid" or "debug" to see)
-	local grassShape = { -halfW,-34, halfW,-34, halfW,34, -halfW,34 }
-	physics.addBody( grass, "static", { friction=0.3, shape=grassShape } )
+	for i = 1,num_cells do
+		-- Vertical lines
+		local sv = display.newRect(cell_width * i, cell_height, cell_width, arena_height)
+		sv:setFillColor(0, 0, 0)
+		sv:setStrokeColor(255, 255, 255)
+		sv.strokeWidth = 3
+		sv.alpha = 0.5
+	end
 	
-	-- all display objects must be inserted into group
-	group:insert( background )
-	group:insert( grass)
+	-- Draw button
+	playBtn = widget.newButton{
+		label="Play",
+		defaultFile=util.button_image,
+		overFile=util.active_button_image,
+		width=256, height=64,
+		onRelease = onPlayBtnRelease	-- event listener function
+	}
+	playBtn.x = arena_width + 2 * cell_width + 128
+	playBtn.y = 1.5 * cell_height
+	
+	undoBtn = widget.newButton{
+		label="Undo",
+		defaultFile=util.button_image,
+		overFile=util.active_button_image,
+		width=256, height=64,
+		onRelease = onPlayBtnRelease	-- event listener function
+	}
+	undoBtn.x = playBtn.x
+	undoBtn.y = playBtn.y + 2 * cell_height
+	
+	resetBtn = widget.newButton{
+		label="Reset",
+		defaultFile=util.button_image,
+		overFile=util.active_button_image,
+		width=256, height=64,
+		onRelease = onPlayBtnRelease	-- event listener function
+	}
+	resetBtn.x = playBtn.x
+	resetBtn.y = playBtn.y + 4 * cell_height
+	
+	-- Draw Time bar
+	local timeText = display.newText("Time", 0, 0, native.systemFont, 32)
+	timeText.x = playBtn.x
+	timeText.y = playBtn.y + 12 * cell_height
+	
+	-- Draw Rect
+	local timeRect = display.newRect(2 * cell_width + arena_width, timeText.y + cell_height, 256, 20)
+	timeRect:setFillColor(153, 101, 21)
 end
 
 -- Called immediately after scene has moved onscreen:

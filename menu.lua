@@ -11,7 +11,7 @@ local scene = storyboard.newScene()
 local widget = require "widget"
 
 -- include utils for all parameters
-local util = require "util"
+local util = require( "util" )
 
 --------------------------------------------
 
@@ -42,7 +42,7 @@ function scene:createScene( event )
 
 	
 	-- create/position logo/title image on upper-half of the screen
-	local titleLogo = display.newImageRect( util.params.logo_image, 384, 384 )
+	local titleLogo = display.newImageRect( util.logo_image, 384, 384 )
 	titleLogo:setReferencePoint( display.CenterReferencePoint )
 	titleLogo.x = display.contentWidth * 0.5
 	titleLogo.y = 256
@@ -50,8 +50,8 @@ function scene:createScene( event )
 	-- create a widget button (which will loads level1.lua on release)
 	playBtn = widget.newButton{
 		label="Play",
-		defaultFile=util.params.button_image,
-		overFile=util.params.active_button_image,
+		defaultFile=util.button_image,
+		overFile=util.active_button_image,
 		width=192, height=64,
 		onRelease = onPlayBtnRelease	-- event listener function
 	}
@@ -62,8 +62,8 @@ function scene:createScene( event )
 	-- Create a button for tutorial
 	tutBtn = widget.newButton{
 		label="Tutorial",
-		defaultFile=util.params.button_image,
-		overFile=util.params.active_button_image,
+		defaultFile=util.button_image,
+		overFile=util.active_button_image,
 		width=192, height=64,
 		onRelease = onPlayBtnRelease	-- event listener function
 	}
